@@ -36,16 +36,16 @@ function App() {
     const repos = storage.read('repositories');
 
     const repo = repos.find((repo) => repo.id === id);
-
+    const newRepo = repos.filter((repo) => repo.id !== id);
     if (repo.favourite) {
       repo.favourite = false;
     } else if (!repo.favourite) {
       repo.favourite = true;
     }
 
-    const newRepo = [...repos, repo];
-    storage.write('repositories', newRepo);
-    setRepos(newRepo);
+    const updatedRepo = [...newRepo, repo];
+    storage.write('repositories', updatedRepo);
+    setRepos(updatedRepo);
   }
   return (
     <div>
