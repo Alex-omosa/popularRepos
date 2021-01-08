@@ -6,11 +6,11 @@ function initFavourite(repo) {
   return { ...repo, favourite: false };
 }
 function dataStorage() {
-  function read(keyName) {
-    return JSON.parse(window.localStorage.getItem(keyName));
+  async function read(keyName) {
+    return await JSON.parse(window.localStorage.getItem(keyName));
   }
-  function write(fieldName, data) {
-    return window.localStorage.setItem(fieldName, JSON.stringify(data));
+  async function write(fieldName, data) {
+    return await window.localStorage.setItem(fieldName, JSON.stringify(data));
   }
   return {
     read,
@@ -25,14 +25,11 @@ function App() {
     (async function loadRepos() {
       const repos = await getRepos();
       const data = repos.map(initFavourite);
-      ///Writing to the localStorage takes time
-      //So I set repos directly in the mean time
-      setRepos(data);
 
-      storage.write('repositories', data);
+      await storage.write('repositories', data);
+      const reposFromStorage = await storage.read('repositories');
+      setRepos(reposFromStorage);
     })();
-    const repos = storage.read('repositories');
-    setRepos(repos);
   }, []);
 
   function toggleFavourite(id) {
