@@ -25,6 +25,10 @@ function App() {
     (async function loadRepos() {
       const repos = await getRepos();
       const data = repos.map(initFavourite);
+      ///Writing to the localStorage takes time
+      //So I set repos directly in the mean time
+      setRepos(data);
+
       storage.write('repositories', data);
     })();
     const repos = storage.read('repositories');
