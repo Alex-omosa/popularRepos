@@ -1,23 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import Repo from './components/Repo';
+import { getRepos } from './api';
+
+function initFavourite(repo) {
+  return { ...repo, favourite: false };
+}
+function dataStorage() {
+  function read(keyName) {
+    return JSON.parse(window.localStorage.getItem(keyName));
+  }
+  function write(fieldName, data) {
+    return window.localStorage.setItem(fieldName, JSON.stringify(data));
+  }
+  return {
+    read,
+    write,
+  };
+}
+const storage = dataStorage();
 
 function App() {
+  const [repos, setRepos] = useState([]);
+  useEffect(() => {
+    (async function loadRepos() {
+      const repos = await getRepos();
+      const data = repos.map(initFavourite);
+      storage.write('repositories', data);
+    })();
+    const repos = storage.read('repositories');
+    setRepos(repos);
+  }, []);
+
+  function toggleFavourite(id) {
+    const repos = storage.read('repositories');
+
+    const repo = repos.find((repo) => repo.id === id);
+
+    if (repo.favourite) {
+      repo.favourite = false;
+    } else if (!repo.favourite) {
+      repo.favourite = true;
+    }
+
+    const newRepo = [...repos, repo];
+    storage.write('repositories', newRepo);
+    setRepos(newRepo);
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {repos.map((repo, i) => (
+        <Repo key={i} repo={repo} toggleFavourite={toggleFavourite} />
+      ))}
     </div>
   );
 }
