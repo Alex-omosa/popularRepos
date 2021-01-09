@@ -6,11 +6,11 @@ function initFavourite(repo) {
   return { ...repo, favourite: false };
 }
 function dataStorage() {
-  async function read(keyName) {
-    return await JSON.parse(window.localStorage.getItem(keyName));
+  function read(keyName) {
+    return JSON.parse(window.localStorage.getItem(keyName));
   }
-  async function write(fieldName, data) {
-    return await window.localStorage.setItem(fieldName, JSON.stringify(data));
+  function write(fieldName, data) {
+    return window.localStorage.setItem(fieldName, JSON.stringify(data));
   }
   return {
     read,
@@ -26,8 +26,8 @@ function App() {
       const repos = await getRepos();
       const data = repos.map(initFavourite);
 
-      await storage.write('repositories', data);
-      const reposFromStorage = await storage.read('repositories');
+      storage.write('repositories', data);
+      const reposFromStorage = storage.read('repositories');
       setRepos(reposFromStorage);
     })();
   }, []);
