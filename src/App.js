@@ -25,8 +25,9 @@ function App() {
     (async function loadRepos() {
       const repos = await getRepos();
       const data = repos.map(initFavourite);
-
-      storage.write('repositories', data);
+      if (window.localStorage.getItem('repositories') === null) {
+        storage.write('repositories', data);
+      }
       const reposFromStorage = storage.read('repositories');
       setRepos(reposFromStorage);
     })();
